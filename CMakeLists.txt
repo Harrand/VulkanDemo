@@ -4,4 +4,12 @@ project(VulkanDemo)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(VulkanDemo
+    src/window.cpp
+    src/window.hpp
+
     src/main.cpp)
+
+add_subdirectory(lib)
+target_link_directories(VulkanDemo PRIVATE "$ENV{VK_SDK_PATH}/Lib")
+target_include_directories(VulkanDemo PRIVATE "$ENV{VK_SDK_PATH}/include")
+target_link_libraries(VulkanDemo PRIVATE glfw vulkan-1)
