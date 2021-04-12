@@ -89,9 +89,16 @@ VulkanContext init_vulkan()
     // Tell Vulkan the extensions we're using.
     ctx.create_info.enabledExtensionCount = num_extensions;
     ctx.create_info.ppEnabledExtensionNames = extensions;
-    // ?
-    ctx.create_info.enabledLayerCount = 0;
-    // creasteinstance
+    // Validation Layers
+    if(vkd::valid::detail::validation_layers_enabled)
+    {
+        ctx.create_info.enabledLayerCount = static_cast<std::uint32_t>(vkd::valid::detail::validation_layers.size());
+        ctx.create_info.ppEnabledLayerNames = vkd::valid::detail::validation_layers.data();
+    }
+    else
+    {
+        ctx.create_info.enabledLayerCount = 0;
+    }
     ctx.instance = std::make_unique<VulkanInstance>(ctx.create_info);
     return ctx;
 }
