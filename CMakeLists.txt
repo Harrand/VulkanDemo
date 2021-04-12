@@ -4,6 +4,9 @@ project(VulkanDemo)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(VulkanDemo
+    src/device_list.cpp
+    src/device_list.inl
+    src/device_list.hpp
     src/validation.cpp
     src/validation.hpp
     src/window.cpp

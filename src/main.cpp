@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "validation.hpp"
+#include "device_list.hpp"
 #include <utility>
 #include <cstdio>
 #include <cassert>
@@ -26,6 +27,11 @@ struct VulkanInstance
         {
             vkDestroyInstance(this->instance, nullptr);
         }
+    }
+
+    VkInstance get() const
+    {
+        return this->instance;
     }
 private:
     VkInstance instance;
@@ -100,5 +106,22 @@ VulkanContext init_vulkan()
         ctx.create_info.enabledLayerCount = 0;
     }
     ctx.instance = std::make_unique<VulkanInstance>(ctx.create_info);
+    VkInstance vki = ctx.instance->get();
+    // Let's choose a device.
+    vkd::DeviceList devs = vkd::enumerate_devices(vki);
+    std::printf("All Devices (%d):\n", static_cast<int>(devs.size()));
+    for(const auto& dev : devs)
+    {
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(dev, &props);
+        std::printf("\t- \"%s\"\n", props.deviceName);
+    }
+    std::printf("=========\nChosen Device:\n");
+    {
+        VkPhysicalDeviceProperties props;
+        VkPhysicalDevice my_device = vkd::get_any_discrete_gpu(vki);
+        vkGetPhysicalDeviceProperties(my_device, &props);
+        std::printf("\t\"%s\"\n=========\n", props.deviceName);
+    }
     return ctx;
 }
