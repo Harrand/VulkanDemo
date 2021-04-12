@@ -1,14 +1,18 @@
 #include "window.hpp"
+#include "validation.hpp"
 #include <utility>
 #include <cstdio>
 #include <cassert>
-#include <cstdint>
 #include <memory>
 
 struct VulkanInstance
 {
     VulkanInstance(VkInstanceCreateInfo& create_info)
     {
+        if(vkd::valid::detail::validation_layers_enabled)
+        {
+            assert(vkd::valid::confirm_layer_support());
+        }
         this->should_destroy = vkCreateInstance(&create_info, nullptr, &instance) != VK_SUCCESS;
     }
     VulkanInstance(const VulkanInstance& copy) = delete;
