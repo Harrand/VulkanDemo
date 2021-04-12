@@ -21,6 +21,7 @@ namespace vkd
     namespace filters
     {
         bool is_discrete_gpu(VkPhysicalDevice dev);
+        bool has_graphics_queue(VkPhysicalDevice dev);
     }
 }
 #include "device_list.inl"

@@ -17,7 +17,7 @@ namespace vkd
     VkPhysicalDevice get_any_discrete_gpu(VkInstance instance)
     {
         DeviceList gpus = enumerate_devices(instance);
-        gpus = filter_devices(gpus, {filters::is_discrete_gpu});
+        gpus = filter_devices(gpus, {filters::is_discrete_gpu, filters::has_graphics_queue});
         assert(!gpus.empty());
         return gpus[0];
     }
@@ -29,6 +29,23 @@ namespace vkd
             VkPhysicalDeviceProperties props;
             vkGetPhysicalDeviceProperties(dev, &props);
             return props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+        }
+
+        bool has_graphics_queue(VkPhysicalDevice dev)
+        {
+            std::vector<VkQueueFamilyProperties> fam_props;
+            std::uint32_t fam_prop_count;
+            vkGetPhysicalDeviceQueueFamilyProperties(dev, &fam_prop_count, nullptr);
+            fam_props.resize(fam_prop_count);
+            vkGetPhysicalDeviceQueueFamilyProperties(dev, &fam_prop_count, fam_props.data());
+            for(const VkQueueFamilyProperties& prop : fam_props)
+            {
+                if(prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
